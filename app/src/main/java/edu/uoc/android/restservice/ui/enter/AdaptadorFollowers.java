@@ -41,8 +41,9 @@ public class AdaptadorFollowers extends RecyclerView.Adapter<AdaptadorFollowers.
     public void onBindViewHolder(@NonNull ViewHolderFollowers holder, int position) {
         holder.etiNombre.setText(listaFollowers.get(position).getLogin());
 
+        //  codigo que muestra las informacion de las imagene
+        Picasso.get().load(listaFollowers.get(position).getAvatarUrl()).into(holder.foto);
     }
-
     @Override
     public int getItemCount() {
         return listaFollowers.size();
@@ -51,12 +52,15 @@ public class AdaptadorFollowers extends RecyclerView.Adapter<AdaptadorFollowers.
     public class ViewHolderFollowers extends RecyclerView.ViewHolder {
 
         TextView etiNombre;
+        // llama a la foto
+        ImageView foto;
 
         public ViewHolderFollowers(View itemView) {
             super(itemView);
 
             etiNombre = (TextView) itemView.findViewById(R.id.textViewLista);
-
+            // muestra con un View
+            foto = (ImageView) itemView.findViewById(R.id.imageViewLista);
         }
     }
 }

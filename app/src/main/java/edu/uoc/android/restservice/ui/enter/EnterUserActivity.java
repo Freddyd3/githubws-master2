@@ -37,7 +37,11 @@ public class EnterUserActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onClick(View v) {
         if (v == btnFollowers) {
-
+            // TODO: Go to nex activity
+            // aqui se inicia la actividad creada
+            Intent intent = new Intent(EnterUserActivity.this, InfoUserActivity.class);
+            intent.putExtra("loginName", etUser.getText().toString());
+            startActivity(intent);
         }
     }
 }

@@ -54,6 +54,7 @@ public class InfoUserActivity extends AppCompatActivity {
         initProgressBar();
 
         mostrarDatosBasicos(loginName);
+        mostrarSeguidores(loginName);
     }
 
     TextView labelFollowing, labelRepositories, labelFollowers;
@@ -75,6 +76,20 @@ public class InfoUserActivity extends AppCompatActivity {
         labelFollowers.setVisibility(View.INVISIBLE);
 
     }
+    //este es el metodo que hace las llamada de los seguires de github
+    private void endProgressBar()
+    {
+        progressBar.setVisibility(View.GONE);
+        textViewFollowing.setVisibility(View.VISIBLE);
+        textViewRepositories.setVisibility(View.VISIBLE);
+        imageViewProfile.setVisibility(View.VISIBLE);
+        recyclerViewFollowers.setVisibility(View.VISIBLE);
+
+        labelFollowers.setVisibility(View.VISIBLE);
+        labelRepositories.setVisibility(View.VISIBLE);
+        labelFollowing.setVisibility(View.VISIBLE);
+
+    }
 
     private void mostrarDatosBasicos(String loginName){
         GitHubAdapter adapter = new GitHubAdapter();
@@ -85,12 +100,51 @@ public class InfoUserActivity extends AppCompatActivity {
             public void onResponse(Call<Owner> call, Response<Owner> response) {
                 Owner owner = response.body();
                 textViewRepositories.setText(owner.getPublicRepos().toString());
+                textViewFollowing.setText(owner.getFollowing().toString());
+                Picasso.get().load(owner.getAvatarUrl()).into(imageViewProfile);
             }
-
             @Override
             public void onFailure(Call<Owner> call, Throwable t) {
-
+                //Toast.makeText(this, "Something went worng", Toast.LENGTH_LONG).show();
             }
         });
         }
+
+    //Codigo para mostrar lista de seguidores que me siguen
+    //public void mostrarSeguidores(View view){
+    private void mostrarSeguidores(String loginName){
+        // este muestra los seguidores y los llama con el servidor github
+        GitHubAdapter adapter = new GitHubAdapter();
+
+        Call<List<Owner>> call = adapter.getOwnerFollowers(loginName);
+
+        call.enqueue(new Callback<List<Owner>>() {
+            @Override
+
+            // llamamos  la lista
+            public void onResponse(Call<List<Owner>> call, Response<List<Owner>> response) {
+                List<Owner> lista = response.body();
+
+                for (Owner owner: lista
+                        ) {
+                    Log.e("LOGIN", owner.getLogin());
+                    listaFollowers.add(owner);
+                }
+                // este es el odigo conde completa el adapter
+                AdaptadorFollowers adaptadorFollowers = new AdaptadorFollowers(listaFollowers);
+                recyclerViewFollowers.setAdapter(adaptadorFollowers);
+
+                endProgressBar();
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Owner>> call, Throwable t) {
+
+                labelFollowers.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+                labelFollowers.setText("Something went wrong");
+            }
+        });
+    }
 }
